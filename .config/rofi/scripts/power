@@ -1,0 +1,110 @@
+#!/bin/bash
+
+# Este script utiliza rofi para presentar un menú de opciones de energía
+# y ejecuta los comandos correspondientes.
+# ───────────────────────────────────────────────────────────────
+#                      Theme Settings
+# ───────────────────────────────────────────────────────────────
+dir="$HOME/.config/rofi/settings/powermenu/"
+
+# ───────────────────────────────────────────────────────────────
+#                         Variables
+# ───────────────────────────────────────────────────────────────
+# Define las cadenas que Rofi mostrará para cada opción.
+# Puedes personalizar estas cadenas.
+shutdown="⏻ "
+reboot=""
+lock=""
+suspend=""
+logout=""
+
+# ───────────────────────────────────────────────────────────────
+#                         Función run_cmd
+# ───────────────────────────────────────────────────────────────
+# Esta función ejecuta los comandos del sistema.
+# Requiere permisos adecuados (posiblemente a través de sudoers sin contraseña).
+run_cmd() {
+    local cmd_option="$1" # Guarda el primer argumento en una variable local
+
+    case "${cmd_option}" in
+        --shutdown)
+            # Apaga el sistema. Requiere permisos de root.
+            systemctl poweroff
+            ;;
+        --reboot)
+            # Reinicia el sistema. Requiere permisos de root.
+            systemctl reboot
+            ;;
+        --suspend)
+            # Suspende el sistema. Requiere permisos de root.
+            systemctl suspend
+            ;;
+        --logout)
+            # Cierra la sesión del usuario actual matando todos sus procesos.
+            # Este es un método 'brutal'. Considera usar un comando específico
+            # de tu entorno de escritorio para un cierre de sesión más limpio.
+            pkill -KILL -u "$USER"
+            ;;
+        *)
+            # Maneja opciones no reconocidas (aunque no debería ocurrir con este script).
+            echo "Opción de comando no válida: ${cmd_option}" >&2
+            exit 1
+            ;;
+    esac
+}
+
+# ───────────────────────────────────────────────────────────────
+#                         Función run_rofi
+# ───────────────────────────────────────────────────────────────
+# Esta función llama a Rofi para mostrar las opciones y devuelve la selección del usuario.
+# En un script real, aquí usarías `rofi -dmenu`.
+run_rofi() {
+    printf "%s\n%s\n%s\n%s\n%s\n" \
+        "${shutdown}" \
+        "${reboot}" \
+        "${lock}" \
+        "${suspend}" \
+        "${logout}" | rofi -dmenu \
+                      -i \
+                      -p "Opciones de Energía" \
+                      -theme ${dir}/cozy.rasi 
+}
+
+# ───────────────────────────────────────────────────────────────
+#                         Ejecutar Cmd
+# ───────────────────────────────────────────────────────────────
+# Obtiene la opción seleccionada por el usuario a través de Rofi.
+chosen="$(run_rofi)"
+
+# Evalúa la opción seleccionada y ejecuta el comando correspondiente.
+case "${chosen}" in
+    "${shutdown}")
+        run_cmd --shutdown
+        ;;
+    "${reboot}")
+        run_cmd --reboot
+        ;;
+    "${lock}")
+        # Intenta usar betterlockscreen, si no, usa i3lock.
+        if [[ -x '/usr/bin/betterlockscreen' ]]; then
+            betterlockscreen -l
+        elif [[ -x '/usr/bin/i3lock' ]]; then
+            i3lock
+        else
+            notify-send "Bloqueo de Pantalla" "No se encontró betterlockscreen ni i3lock."
+            echo "Error: No se encontró betterlockscreen ni i3lock." >&2
+        fi
+        ;;
+    "${suspend}")
+        run_cmd --suspend
+        ;;
+    "${logout}")
+        run_cmd --logout
+        ;;
+    *)
+        # Si el usuario cierra Rofi o presiona Escape, $chosen estará vacío
+        # o no coincidirá con ninguna opción.
+        echo "Operación cancelada o opción no reconocida." >&2
+        exit 0
+        ;;
+esac

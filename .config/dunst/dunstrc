@@ -1,0 +1,104 @@
+[global]
+    ### Display ###
+
+    monitor = 0
+    follow = mouse
+    geometry = "300x60-15+46" # 300px width, 60px height, 15px from right, 46px from top
+    # offset = 60x60 # This line is likely redundant if geometry already defines X/Y offsets, you can remove it.
+    indicate_hidden = yes
+    shrink = yes
+    transparency = 0
+
+    # Max number of notifications displayed at once.
+    height = 0 # 0 means it expands to fit content, or use a positive number for a fixed max count.
+
+    separator_height = 2
+    padding = 8
+    horizontal_padding = 12
+    frame_width = 3
+    frame_color = "#282738"
+    separator_color = frame
+    sort = yes
+    idle_threshold = 120
+
+    ### Text ###
+    font = JetBrains Mono Bold 10
+    line_height = 1
+    markup = full
+    format = "<b>%s</b>\n%b"
+    alignment = left
+    show_age_threshold = 60
+    word_wrap = yes
+    ellipsize = middle
+    ignore_newline = no
+    stack_duplicates = true
+    hide_duplicate_count = false
+    show_indicators = yes
+
+    ### Icons ###
+    icon_position = left
+    max_icon_size = 32
+    icon_path = /usr/share/icons/candy-icons/apps/scalable:/usr/share/icons/candy-icons/devices/scalable/
+
+    ### History ###
+    sticky_history = yes
+    history_length = 20
+
+    ### Misc/Advanced ###
+    dmenu = /usr/bin/dmenu -p dunst:
+    browser = /usr/bin/firefox -new-tab
+    always_run_script = true
+    title = Dunst
+    class = Dunst
+
+    # This option (startup_notification) is deprecated, remove it.
+    # startup_notification = false
+
+    # The 'verbosity' option was renamed to 'log_level'.
+    log_level = mesg
+
+    corner_radius = 8
+    force_xinerama = false
+
+    ### mouse ###
+    mouse_left_click = close_current
+    mouse_middle_click = do_action
+    mouse_right_click = close_all
+
+    # --- IMPORTANT: DUNST SHORTCUTS ---
+    # It's generally more robust to bind these shortcuts in your window manager (Qtile)
+    # using 'dunstctl' commands.
+    # If you still want to use Dunst's internal shortcuts, ensure the key names are correct
+    # as identified by 'xev'. Replace 'grave' with the actual key name if different.
+    # close = ctrl+grave      # Example. Replace 'grave' with actual key name if needed.
+    # close_all = ctrl+shift+grave # Example. Replace 'grave' with actual key name if needed.
+    # history = ctrl+grave    # Example. Replace 'grave' with actual key name if needed.
+    # context = ctrl+shift+grave # Example. Replace 'grave' with actual key name if needed.
+
+# Experimental features that may or may not work correctly.
+[experimental]
+    per_monitor_dpi = false
+
+# --- URGENCY SECTIONS (No changes needed here) ---
+[urgency_low]
+    foreground = "#CAA9E0"
+    background = "#282738"
+    frame_color = "#282738"
+    timeout = 10
+    icon = ~/.config/dunst/images/notification.png
+
+[urgency_normal]
+    background = "#282738"
+    foreground = "#CAA9E0"
+    frame_color = "#282738"
+    timeout = 10
+    icon = ~/.config/dunst/images/notification.png
+
+[urgency_critical]
+    background = "#282738"
+    foreground = "#CAA9E0"
+    frame_color = "#282738"
+    timeout = 10
+    icon = ~/.config/dunst/images/notification.png
+
+# --- RULES (As before, no changes needed unless they cause warnings) ---
